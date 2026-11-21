@@ -1,101 +1,100 @@
+# Exercise 2 - Alexa tell me a Joke
 import os
 import random
 from tkinter import *
 from tkinter import messagebox
+from PIL import ImageTk, Image     
 
-BG_COLOUR = "#fff4e0"
-
-# Look for the text file next to this script so it works from any folder
-JOKES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          "randomJokes.txt")
-
-jokes = []             # list of (setup, punchline) tuples
-currentJoke = None     # the joke currently on screen
-
-
-def loadJokes():
-    """Read the file and return a list of (setup, punchline) tuples."""
-    jokeList = []
-    try:
-        with open(JOKES_FILE, "r", encoding="utf-8") as fileHandler:
-            for line in fileHandler:
-                line = line.strip()
-                if "?" not in line:          # skip blank / malformed lines
-                    continue
-                # split only on the FIRST '?' so punchlines can contain '?'
-                setup, punchline = line.split("?", 1)
-                jokeList.append((setup + "?", punchline.strip()))
-    except FileNotFoundError:
-        messagebox.showerror("File not found",
-                             f"Could not find:\n{JOKES_FILE}")
-    return jokeList
+# ---------- THEME CONFIGURATION ----------
+CARD_COLOR = "#3b0a0a"       # dark card behind the joke text
+TEXT_COLOR = "#ffffff"
+ACCENT_COLOR = "#ffd166"     # gold
+FONT_NAME = "Trebuchet MS"
+BG_IMAGE = "joke_bg.png"    
 
 
-def tellJoke():
-    """Pick a random joke (different from the last one) and show the setup."""
-    global currentJoke
-    if not jokes:
-        return
-
-    newJoke = random.choice(jokes)
-    while newJoke == currentJoke and len(jokes) > 1:
-        newJoke = random.choice(jokes)
-    currentJoke = newJoke
-
-    setupLabel.config(text=currentJoke[0])
-    punchlineLabel.config(text="")           # hide the old punchline
-    punchlineButton.config(state=NORMAL)     # now a punchline can be shown
-    nextButton.config(state=NORMAL)
-    alexaButton.config(state=DISABLED)       # first button only needed once
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))     # get the directory of this script
+file_path = os.path.join(BASE_DIR, "randomJokes.txt")
+image_path = os.path.join(BASE_DIR, BG_IMAGE)           # path to the background image
 
 
-def showPunchline():
-    """Display the punchline underneath the setup."""
-    if currentJoke is not None:
-        punchlineLabel.config(text=currentJoke[1])
-        punchlineButton.config(state=DISABLED)
+#--------- Read jokes from file ----------
+jokes = []    # each joke will be stored as [setup, punchline]
+
+with open(file_path, "r", encoding="utf-8") as file_handler:
+    lines = file_handler.readlines()                  # read all lines from the file
+
+for line in lines:
+    line = line.strip()
+    if line != "":
+        parts = line.split("?")
+        setup = parts[0] + "?"                             
+        punchline = parts[1]
+        jokes.append([setup, punchline])                   # store the joke as a list of [setup, punchline]
+
+current_joke = []    # the joke on screen at the moment
 
 
-# ---------------------------------------------------------------------------
-# Window
-# ---------------------------------------------------------------------------
+# ---------- Functions ----------
+def tell_joke():
+    """Pick a random joke and show only the setup."""
+    global current_joke
+    current_joke = random.choice(jokes)
+    setup_label.config(text=current_joke[0])
+    punchline_label.config(text="")
+
+
+def show_punchline():
+    """Show the punchline under the setup."""
+    if current_joke == []:
+        messagebox.showinfo("No joke yet", "Click 'Alexa tell me a Joke' first!")
+    else:
+        punchline_label.config(text=current_joke[1])
+
+
+# ---------- Window ----------
 root = Tk()
-root.title("Alexa, tell me a Joke")
-root.geometry("560x380")
-root.config(bg=BG_COLOUR)
+root.title("Alexa tell me a Joke")
+root.geometry("440x520")                       # set the window size to match the background image
+root.resizable(False, False)                        # prevent the window from being resized
 
-jokes = loadJokes()
+raw_image = Image.open(image_path).resize((440, 520))
+bg_photo = ImageTk.PhotoImage(raw_image)
+bg_label = Label(root, image=bg_photo)
+bg_label.place(x=0, y=0, relwidth=1, relheight=1)            # place the background image to fill the window
 
-Label(root, text="Joke Assistant", font=("Arial", 20, "bold"),
-      bg=BG_COLOUR).pack(pady=(20, 10))
+# Title and main button at the top
+title_label = Label(root, text="Joke Assistant", font=(FONT_NAME, 22, "bold"),
+                    bg=CARD_COLOR, fg=ACCENT_COLOR, padx=15, pady=3)
+title_label.place(relx=0.5, y=25, anchor=N)
 
-alexaButton = Button(root, text="Alexa tell me a Joke", font=("Arial", 13),
-                     width=22, command=tellJoke)
-alexaButton.pack(pady=5)
+alexa_button = Button(root, text="Alexa tell me a Joke", font=(FONT_NAME, 13, "bold"),             # Also used for the "Next Joke" button
+                      bg=ACCENT_COLOR, fg="#3b0a0a", width=22, command=tell_joke)
+alexa_button.place(relx=0.5, y=85, anchor=N)
 
-# wraplength makes long jokes wrap onto several lines instead of being cut off
-setupLabel = Label(root, text="", font=("Arial", 15, "bold"), bg=BG_COLOUR,
-                   wraplength=500, justify="center", height=3)
-setupLabel.pack(pady=(15, 5))
+# Dark card at the bottom holds the joke, so the microphone stays visible
+card = Frame(root, bg=CARD_COLOR, padx=15, pady=15, bd=2, relief=RIDGE)
+card.place(relx=0.5, rely=1.0, y=-20, anchor=S, width=400)
 
-punchlineLabel = Label(root, text="", font=("Arial", 15, "italic"),
-                       bg=BG_COLOUR, fg="#c62828", wraplength=500,
-                       justify="center", height=3)
-punchlineLabel.pack(pady=5)
+setup_label = Label(card, text="", font=(FONT_NAME, 14, "bold"), bg=CARD_COLOR,
+                    fg=TEXT_COLOR, wraplength=360, height=2)
+setup_label.pack(pady=5)
 
-# Buttons side by side in their own frame
-buttonFrame = Frame(root, bg=BG_COLOUR)
-buttonFrame.pack(pady=10)
+punchline_label = Label(card, text="", font=(FONT_NAME, 14, "italic"), bg=CARD_COLOR,
+                        fg=ACCENT_COLOR, wraplength=360, height=2)
+punchline_label.pack(pady=5)
 
-punchlineButton = Button(buttonFrame, text="Show Punchline", width=14,
-                         state=DISABLED, command=showPunchline)
-punchlineButton.grid(row=0, column=0, padx=6)
+button_frame = Frame(card, bg=CARD_COLOR)
+button_frame.pack(pady=10)
 
-nextButton = Button(buttonFrame, text="Next Joke", width=14,
-                    state=DISABLED, command=tellJoke)
-nextButton.grid(row=0, column=1, padx=6)
+punchline_button = Button(button_frame, text="Show Punchline", width=12,
+                          command=show_punchline)
+punchline_button.pack(side=LEFT, padx=4)
 
-Button(buttonFrame, text="Quit", width=14,
-       command=root.destroy).grid(row=0, column=2, padx=6)
+next_button = Button(button_frame, text="Next Joke", width=12, command=tell_joke)                 
+next_button.pack(side=LEFT, padx=4)
 
-root.mainloop()
+quit_button = Button(button_frame, text="Quit", width=12, command=root.destroy)
+quit_button.pack(side=LEFT, padx=4)
+
+root.mainloop()             # start the GUI event loop

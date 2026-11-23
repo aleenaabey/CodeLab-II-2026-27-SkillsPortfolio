@@ -26,11 +26,11 @@ with open(file_path, "r", encoding="utf-8") as file_handler:
 
 for line in lines:
     line = line.strip()
-    if line != "":
-        parts = line.split("?")
-        setup = parts[0] + "?"                             
-        punchline = parts[1]
-        jokes.append([setup, punchline])                   # store the joke as a list of [setup, punchline]
+    if line != "" and "?" in line:          # only process non-empty lines that contain a question mark
+        parts = line.split("?", 1)    # split into setup and punchline at the first question mark
+        setup = parts[0].strip() + "?"                             
+        punchline = parts[1].strip()
+        jokes.append([setup, punchline])   # store the joke as a list of [setup, punchline]
 
 current_joke = []    # the joke on screen at the moment
 
@@ -55,46 +55,99 @@ def show_punchline():
 # ---------- Window ----------
 root = Tk()
 root.title("Alexa tell me a Joke")
-root.geometry("440x520")                       # set the window size to match the background image
+root.geometry("440x600")                       # set the window size to match the background image
 root.resizable(False, False)                        # prevent the window from being resized
 
-raw_image = Image.open(image_path).resize((440, 520))
+raw_image = Image.open(image_path).resize((440, 600))
 bg_photo = ImageTk.PhotoImage(raw_image)
 bg_label = Label(root, image=bg_photo)
-bg_label.place(x=0, y=0, relwidth=1, relheight=1)            # place the background image to fill the window
+bg_label.place(x=0, 
+               y=0, 
+               relwidth=1, 
+               relheight=1)            # place the background image to fill the window
 
 # Title and main button at the top
-title_label = Label(root, text="Joke Assistant", font=(FONT_NAME, 22, "bold"),
-                    bg=CARD_COLOR, fg=ACCENT_COLOR, padx=15, pady=3)
-title_label.place(relx=0.5, y=25, anchor=N)
+title_label = Label(root, 
+                    text="Joke Assistant", 
+                    font=(FONT_NAME, 22, "bold"),
+                    bg=CARD_COLOR, 
+                    fg=ACCENT_COLOR, 
+                    padx=15, 
+                    pady=3)
+title_label.place(relx=0.5, 
+                  y=25, 
+                  anchor=N)
 
-alexa_button = Button(root, text="Alexa tell me a Joke", font=(FONT_NAME, 13, "bold"),             # Also used for the "Next Joke" button
-                      bg=ACCENT_COLOR, fg="#3b0a0a", width=22, command=tell_joke)
-alexa_button.place(relx=0.5, y=85, anchor=N)
+alexa_button = Button(root, 
+                      text="Alexa tell me a Joke", 
+                      font=(FONT_NAME, 13, "bold"),             # starts the first joke
+                      bg=ACCENT_COLOR,
+                        fg="#3b0a0a", 
+                        width=22, 
+                        command=tell_joke)
+alexa_button.place(relx=0.5, 
+                   y=85, 
+                   anchor=N)
 
-# Dark card at the bottom holds the joke, so the microphone stays visible
-card = Frame(root, bg=CARD_COLOR, padx=15, pady=15, bd=2, relief=RIDGE)
-card.place(relx=0.5, rely=1.0, y=-20, anchor=S, width=400)
+# Dark card at the bottom holds the joke
+card = Frame(root, bg=CARD_COLOR, 
+             padx=15, 
+             pady=15, 
+             bd=2, 
+             relief=RIDGE)
+card.place(relx=0.5, 
+           rely=1.0, 
+           y=-20, 
+           anchor=S, 
+           width=400)
 
-setup_label = Label(card, text="", font=(FONT_NAME, 14, "bold"), bg=CARD_COLOR,
-                    fg=TEXT_COLOR, wraplength=360, height=2)
+setup_label = Label(card, text="", 
+                    font=(FONT_NAME, 14, "bold"), 
+                    bg=CARD_COLOR,
+                    fg=TEXT_COLOR, 
+                    wraplength=360, 
+                    height=2)
 setup_label.pack(pady=5)
 
-punchline_label = Label(card, text="", font=(FONT_NAME, 14, "italic"), bg=CARD_COLOR,
-                        fg=ACCENT_COLOR, wraplength=360, height=2)
+punchline_label = Label(card, text="", 
+                        font=(FONT_NAME, 14, "italic"), 
+                        bg=CARD_COLOR,
+                        fg=ACCENT_COLOR, 
+                        wraplength=360, 
+                        height=2)
 punchline_label.pack(pady=5)
 
 button_frame = Frame(card, bg=CARD_COLOR)
 button_frame.pack(pady=10)
 
-punchline_button = Button(button_frame, text="Show Punchline", width=12,
-                          command=show_punchline)
+punchline_button = Button(button_frame, 
+                          text="Show Punchline",
+                         width=12,
+                          command=show_punchline, 
+                          bg="#D07E7E", 
+                          fg="#3F0202", 
+                          activebackground="#a52a2a",
+                          activeforeground="white")
 punchline_button.pack(side=LEFT, padx=4)
 
-next_button = Button(button_frame, text="Next Joke", width=12, command=tell_joke)                 
+next_button = Button(button_frame,
+                      text="Next Joke", 
+                      width=12, 
+                      command=tell_joke, 
+                      bg="#D78779", 
+                      fg="#3F0202", 
+                      activebackground="#a52a2a",
+                     activeforeground="white")                 
 next_button.pack(side=LEFT, padx=4)
 
-quit_button = Button(button_frame, text="Quit", width=12, command=root.destroy)
+quit_button = Button(button_frame, 
+                     text="Quit", 
+                     width=12, 
+                     command=root.destroy, 
+                     bg="#CD7C7C", 
+                     fg="#3F0202", 
+                     activebackground="#a52a2a",
+                     activeforeground="white")
 quit_button.pack(side=LEFT, padx=4)
 
 root.mainloop()             # start the GUI event loop

@@ -1,33 +1,71 @@
+"""
+Exercise 3 - Student Manager (Light Purple Theme)
+Manages student marks from studentMarks.txt with Core Options (1-4)
+and Extension Options (5-8: Sort, Add, Delete, Update).
+Note: Structure/extension logic developed with assistance from AI
+(Prompt: "<insert your prompt here>").
+"""
+
 import os
 from tkinter import *
 from tkinter import messagebox
 
-# Look for the data file next to this script so it works from any folder
-FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "studentMarks.txt")
+# Pillow for background image (same safe fallback as Exercise 1)
+try:
+    from PIL import ImageTk, Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
-COURSEWORK_MAX = 60     # 3 pieces of coursework, each out of 20
+# ---------- LIGHT PURPLE THEME & CONSTANTS ----------
+BG_IMAGE = "student_bg.jpg"     # Put this image in the 03- StudentManager folder
+BG_COLOR = "#f3e8ff"            # Fallback soft lavender if no image is found
+PANEL_COLOR = "#faf5ff"         # Light lilac card background
+OUTPUT_BG = "#ffffff"           # Clean white output area
+TEXT_COLOR = "#2e1065"          # Deep purple text for high readability
+ACCENT_COLOR = "#7c3aed"        # Vibrant violet for headings & primary buttons
+LILAC_BTN = "#ddd6fe"           # Soft lilac button for Highest / Lowest
+EXT_COLOR = "#6d28d9"           # Rich royal purple for Extension buttons
+DANGER_COLOR = "#e11d48"        # Rose red for Quit
+FONT_NAME = "Times New Roman"
+
+COURSEWORK_MAX = 60             # 3 coursework marks x 20
 EXAM_MAX = 100
-TOTAL_MAX = COURSEWORK_MAX + EXAM_MAX    # 160 marks available overall
+TOTAL_MAX = COURSEWORK_MAX + EXAM_MAX   # 160 total marks
 
-# Each student is a dictionary; all students live in this list
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE_PATH = os.path.join(BASE_DIR, "studentMarks.txt")
 students = []
 
+# ---------- MAIN WINDOW (AT THE TOP) ----------
+root = Tk()
+root.title("Student Manager")
+root.geometry("920x580")
+root.minsize(850, 560)
+root.resizable(True, True)     # Enables both Minimize and Maximize buttons
+root.config(bg=BG_COLOR)
 
-# ---------------------------------------------------------------------------
-# File handling
-# ---------------------------------------------------------------------------
-def loadStudents():
-    """Read studentMarks.txt into the students list."""
+# Load background image sized to screen so Maximize never leaves empty space
+if os.path.exists(IMAGE_PATH):
+    screen_w = root.winfo_screenwidth()
+    screen_h = root.winfo_screenheight()
+    raw_img = Image.open(IMAGE_PATH).resize((screen_w, screen_h))
+    bg_photo = ImageTk.PhotoImage(raw_img)
+    bg_label = Label(root, image=bg_photo)
+    bg_label.place(x=0, y=0)
+
+# ---------- FILE HANDLING ----------
+def load_students():
+    """Read student records from studentMarks.txt into the students list."""
     students.clear()
     try:
-        with open(FILE_PATH, "r", encoding="utf-8") as fileHandler:
-            lines = [line.strip() for line in fileHandler if line.strip()]
+        with open(FILE_PATH, "r", encoding="utf-8") as file:
+            lines = [line.strip() for line in file if line.strip()]
     except FileNotFoundError:
-        messagebox.showerror("File not found", f"Could not find:\n{FILE_PATH}")
+        messagebox.showerror("File Not Found", f"Could not find:\n{FILE_PATH}")
         return
 
-    # lines[0] is the student count, the real data starts on the next line
+    # First line is the student count; student records start from index 1
     for line in lines[1:]:
         parts = line.split(",")
         students.append({
@@ -38,36 +76,29 @@ def loadStudents():
         })
 
 
-def saveStudents():
-    """Write the students list back to studentMarks.txt."""
-    with open(FILE_PATH, "w", encoding="utf-8") as fileHandler:
-        fileHandler.write(f"{len(students)}\n")
-        for student in students:
-            m = student["marks"]
-            fileHandler.write(f"{student['code']},{student['name']},"
-                              f"{m[0]},{m[1]},{m[2]},{student['exam']}\n")
+def save_students():
+    """Save the updated students list back to studentMarks.txt."""
+    with open(FILE_PATH, "w", encoding="utf-8") as file:
+        file.write(f"{len(students)}\n")
+        for s in students:
+            m = s["marks"]
+            file.write(f"{s['code']},{s['name']},{m[0]},{m[1]},{m[2]},{s['exam']}\n")
 
 
-# ---------------------------------------------------------------------------
-# Calculations and formatting
-# ---------------------------------------------------------------------------
-def courseworkTotal(student):
-    """Sum of the three coursework marks (out of 60)."""
+# ---------- CALCULATIONS & FORMATTING ----------
+def get_coursework_total(student):
     return sum(student["marks"])
 
 
-def overallMark(student):
-    """Coursework + exam (out of 160)."""
-    return courseworkTotal(student) + student["exam"]
+def get_overall_mark(student):
+    return get_coursework_total(student) + student["exam"]
 
 
-def percentage(student):
-    """Overall percentage, based on the 160 marks available."""
-    return overallMark(student) / TOTAL_MAX * 100
+def get_percentage(student):
+    return (get_overall_mark(student) / TOTAL_MAX) * 100
 
 
-def grade(percent):
-    """Convert a percentage into a letter grade."""
+def get_grade(percent):
     if percent >= 70:
         return "A"
     elif percent >= 60:
@@ -79,291 +110,306 @@ def grade(percent):
     return "F"
 
 
-def formatStudent(student):
-    """Return the text block describing one student (used by every view)."""
-    percent = percentage(student)
-    return (f"Name:               {student['name']}\n"
-            f"Student Number:     {student['code']}\n"
-            f"Coursework Total:   {courseworkTotal(student)} / {COURSEWORK_MAX}\n"
-            f"Exam Mark:          {student['exam']} / {EXAM_MAX}\n"
-            f"Overall Percentage: {percent:.1f}%\n"
-            f"Grade:              {grade(percent)}\n")
+def format_student(student):
+    pct = get_percentage(student)
+    return (
+        f"Name:               {student['name']}\n"
+        f"Student Number:     {student['code']}\n"
+        f"Coursework Total:   {get_coursework_total(student)} / {COURSEWORK_MAX}\n"
+        f"Exam Mark:          {student['exam']} / {EXAM_MAX}\n"
+        f"Overall Percentage: {pct:.1f}%\n"
+        f"Grade:              {get_grade(pct)}\n"
+    )
 
 
-def formatList(studentList):
-    """Format several students followed by the class summary."""
-    if not studentList:
-        return "No student records to show."
-    text = ""
-    for student in studentList:
-        text += formatStudent(student) + "-" * 40 + "\n"
-    average = sum(percentage(s) for s in studentList) / len(studentList)
-    text += f"\nNumber of students: {len(studentList)}\n"
-    text += f"Average percentage: {average:.1f}%\n"
-    return text
+def format_student_list(student_list):
+    if not student_list:
+        return "No student records to display."
+    output = ""
+    for s in student_list:
+        output += format_student(s) + ("-" * 42) + "\n"
+    avg_pct = sum(get_percentage(s) for s in student_list) / len(student_list)
+    output += f"\nNumber of students: {len(student_list)}\n"
+    output += f"Average percentage: {avg_pct:.1f}%\n"
+    return output
 
 
-def showText(text):
-    """Display text in the read-only output area."""
-    outputBox.config(state=NORMAL)
-    outputBox.delete("1.0", END)
-    outputBox.insert(END, text)
-    outputBox.config(state=DISABLED)
+def show_output(text):
+    """Display text inside the read-only output box."""
+    output_box.config(state=NORMAL)
+    output_box.delete("1.0", END)
+    output_box.insert(END, text)
+    output_box.config(state=DISABLED)
 
 
-# ---------------------------------------------------------------------------
-# Searching
-# ---------------------------------------------------------------------------
-def findStudents(searchText):
-    """Return every student whose number equals, or name contains, the text."""
-    searchText = searchText.strip().lower()
-    matches = []
-    for student in students:
-        if searchText == str(student["code"]) or searchText in student["name"].lower():
-            matches.append(student)
-    return matches
+# ---------- SEARCH HELPERS ----------
+def find_students(query):
+    """Return students matching an exact student number or partial name."""
+    query = query.strip().lower()
+    return [
+        s for s in students
+        if query == str(s["code"]) or query in s["name"].lower()
+    ]
 
 
-def getSingleStudent():
-    """
-    Use the search box to find exactly one student (for delete / update).
-    Returns the student dictionary, or None after showing a warning.
-    """
-    searchText = searchEntry.get().strip()
-    if searchText == "":
-        messagebox.showwarning("Search needed",
+def get_single_student():
+    """Find exactly one student from the search box (used for Delete / Update)."""
+    query = search_entry.get().strip()
+    if not query:
+        messagebox.showwarning("Search Required",
                                "Type a student name or number in the search box first.")
         return None
 
-    matches = findStudents(searchText)
-    if len(matches) == 0:
-        messagebox.showinfo("Not found", f"No student matches '{searchText}'.")
+    matches = find_students(query)
+    if not matches:
+        messagebox.showinfo("Not Found", f"No student matches '{query}'.")
         return None
     if len(matches) > 1:
         names = ", ".join(s["name"] for s in matches)
-        messagebox.showinfo("Be more specific",
-                            f"More than one student matches: {names}")
+        messagebox.showinfo("Be More Specific",
+                            f"Multiple students match '{query}':\n{names}")
         return None
     return matches[0]
 
 
-# ---------------------------------------------------------------------------
-# Menu actions 1 - 4
-# ---------------------------------------------------------------------------
-def viewAll():
-    showText(formatList(students))
+# ---------- CORE MENU ACTIONS (1 - 4) ----------
+def view_all():
+    show_output(format_student_list(students))
 
 
-def viewIndividual():
-    searchText = searchEntry.get().strip()
-    if searchText == "":
-        messagebox.showwarning("Search needed",
-                               "Type a student name or number in the search box first.")
+def view_individual():
+    query = search_entry.get().strip()
+    if not query:
+        messagebox.showwarning("Search Required", "Enter a student name or number first.")
         return
-    matches = findStudents(searchText)
+    matches = find_students(query)
     if not matches:
-        showText(f"No student matches '{searchText}'.")
+        show_output(f"No student found matching '{query}'.")
     else:
-        text = ""
-        for student in matches:
-            text += formatStudent(student) + "-" * 40 + "\n"
-        showText(text)
+        text = "".join(format_student(s) + ("-" * 42) + "\n" for s in matches)
+        show_output(text)
 
 
-def showHighest():
+def show_highest():
     if not students:
+        show_output("No student records loaded.")
         return
-    best = max(overallMark(s) for s in students)
-    # a list, in case two students tie for the top mark
-    showText("HIGHEST OVERALL MARK\n\n" +
-             "".join(formatStudent(s) + "\n" for s in students if overallMark(s) == best))
+    top_mark = max(get_overall_mark(s) for s in students)
+    top_students = [s for s in students if get_overall_mark(s) == top_mark]
+    text = "HIGHEST OVERALL MARK\n" + ("=" * 42) + "\n"
+    text += "".join(format_student(s) + "\n" for s in top_students)
+    show_output(text)
 
 
-def showLowest():
+def show_lowest():
     if not students:
+        show_output("No student records loaded.")
         return
-    worst = min(overallMark(s) for s in students)
-    showText("LOWEST OVERALL MARK\n\n" +
-             "".join(formatStudent(s) + "\n" for s in students if overallMark(s) == worst))
+    low_mark = min(get_overall_mark(s) for s in students)
+    low_students = [s for s in students if get_overall_mark(s) == low_mark]
+    text = "LOWEST OVERALL MARK\n" + ("=" * 42) + "\n"
+    text += "".join(format_student(s) + "\n" for s in low_students)
+    show_output(text)
 
 
-# ---------------------------------------------------------------------------
-# Extension: sort
-# ---------------------------------------------------------------------------
-def sortStudents():
-    """Pop-up window asking how to sort, then display the sorted records."""
-    window = Toplevel(root)
-    window.title("Sort student records")
-    window.geometry("300x280")
-    window.grab_set()                    # keep focus on this window
+# ---------- EXTENSION 5: SORT ----------
+def sort_students():
+    """Open a pop-up window to choose sort field and order."""
+    win = Toplevel(root)
+    win.title("Sort Student Records")
+    win.geometry("300x300")
+    win.resizable(False, False)
+    win.config(bg=PANEL_COLOR)
+    win.grab_set()
 
-    sortBy = StringVar(value="percentage")
-    order = StringVar(value="asc")
+    sort_by = StringVar(value="percentage")
+    order = StringVar(value="desc")
 
-    Label(window, text="Sort by:", font=("Arial", 11, "bold")).pack(pady=(12, 2))
-    Radiobutton(window, text="Name", variable=sortBy, value="name").pack(anchor=W, padx=60)
-    Radiobutton(window, text="Student number", variable=sortBy, value="code").pack(anchor=W, padx=60)
-    Radiobutton(window, text="Overall percentage", variable=sortBy, value="percentage").pack(anchor=W, padx=60)
+    Label(win, text="Sort By:", font=(FONT_NAME, 12, "bold"),
+          bg=PANEL_COLOR, fg=ACCENT_COLOR).pack(pady=(14, 4))
 
-    Label(window, text="Order:", font=("Arial", 11, "bold")).pack(pady=(12, 2))
-    Radiobutton(window, text="Ascending", variable=order, value="asc").pack(anchor=W, padx=60)
-    Radiobutton(window, text="Descending", variable=order, value="desc").pack(anchor=W, padx=60)
+    for text, val in [("Name", "name"), ("Student Number", "code"), ("Overall Percentage", "percentage")]:
+        Radiobutton(win, text=text, variable=sort_by, value=val,
+                    font=(FONT_NAME, 10), bg=PANEL_COLOR, fg=TEXT_COLOR,
+                    selectcolor=OUTPUT_BG, activebackground=PANEL_COLOR,
+                    activeforeground=ACCENT_COLOR).pack(anchor=W, padx=65)
 
-    def applySort():
-        if sortBy.get() == "name":
-            keyFunction = lambda s: s["name"].lower()
-        elif sortBy.get() == "code":
-            keyFunction = lambda s: s["code"]
+    Label(win, text="Order:", font=(FONT_NAME, 12, "bold"),
+          bg=PANEL_COLOR, fg=ACCENT_COLOR).pack(pady=(12, 4))
+
+    for text, val in [("Ascending", "asc"), ("Descending", "desc")]:
+        Radiobutton(win, text=text, variable=order, value=val,
+                    font=(FONT_NAME, 10), bg=PANEL_COLOR, fg=TEXT_COLOR,
+                    selectcolor=OUTPUT_BG, activebackground=PANEL_COLOR,
+                    activeforeground=ACCENT_COLOR).pack(anchor=W, padx=65)
+
+    def apply_sort():
+        if sort_by.get() == "name":
+            key_fn = lambda s: s["name"].lower()
+        elif sort_by.get() == "code":
+            key_fn = lambda s: s["code"]
         else:
-            keyFunction = percentage
-        # sorted() returns a new list so the original order is untouched
-        result = sorted(students, key=keyFunction, reverse=(order.get() == "desc"))
-        showText(formatList(result))
-        window.destroy()
+            key_fn = get_percentage
 
-    Button(window, text="Sort", width=12, command=applySort).pack(pady=15)
+        sorted_list = sorted(students, key=key_fn, reverse=(order.get() == "desc"))
+        show_output(format_student_list(sorted_list))
+        win.destroy()
+
+    Button(win, text="Apply Sort", width=14, font=(FONT_NAME, 10, "bold"),
+           bg=ACCENT_COLOR, fg="white", relief=FLAT, pady=5,
+           command=apply_sort).pack(pady=16)
 
 
-# ---------------------------------------------------------------------------
-# Extension: add / update (share one form)
-# ---------------------------------------------------------------------------
-def openStudentForm(existing=None):
-    """
-    Pop-up form used by both 'Add' (existing=None) and 'Update'
-    (existing=the student being edited, so the boxes start filled in).
-    """
-    window = Toplevel(root)
-    window.title("Update student" if existing else "Add student")
-    window.geometry("340x370")
-    window.grab_set()
+# ---------- EXTENSIONS 6 & 8: ADD / UPDATE ----------
+def open_student_form(existing=None):
+    """Shared pop-up form for adding a new student or updating an existing one."""
+    win = Toplevel(root)
+    win.title("Update Student" if existing else "Add Student")
+    win.geometry("380x340")
+    win.resizable(False, False)
+    win.config(bg=PANEL_COLOR)
+    win.grab_set()
 
-    labels = ["Student number (1000-9999)", "Name", "Coursework 1 (0-20)",
-              "Coursework 2 (0-20)", "Coursework 3 (0-20)", "Exam (0-100)"]
+    fields = [
+        "Student Number (1000-9999):",
+        "Student Name:",
+        "Coursework 1 (0-20):",
+        "Coursework 2 (0-20):",
+        "Coursework 3 (0-20):",
+        "Exam Mark (0-100):",
+    ]
     entries = []
-    for row, labelText in enumerate(labels):
-        Label(window, text=labelText).grid(row=row, column=0, padx=12, pady=8, sticky=W)
-        entry = Entry(window, width=18)
-        entry.grid(row=row, column=1, padx=8, pady=8)
+    for row, label_text in enumerate(fields):
+        Label(win, text=label_text, font=(FONT_NAME, 10, "bold"),
+              bg=PANEL_COLOR, fg=TEXT_COLOR).grid(row=row, column=0, padx=14, pady=8, sticky=W)
+        entry = Entry(win, font=(FONT_NAME, 10), width=20,
+                      bg=OUTPUT_BG, fg=TEXT_COLOR, relief=SOLID, bd=1)
+        entry.grid(row=row, column=1, padx=10, pady=8)
         entries.append(entry)
 
     if existing:
-        values = [existing["code"], existing["name"], *existing["marks"], existing["exam"]]
-        for entry, value in zip(entries, values):
-            entry.insert(0, str(value))
+        prefill = [existing["code"], existing["name"], *existing["marks"], existing["exam"]]
+        for entry, val in zip(entries, prefill):
+            entry.insert(0, str(val))
 
-    def saveForm():
-        """Validate every box; only save if everything is acceptable."""
+    
+    def save_form():
         try:
-            code = int(entries[0].get())
-            name = entries[1].get().strip()
-            marks = [int(entries[2].get()), int(entries[3].get()), int(entries[4].get())]
-            exam = int(entries[5].get())
+            code = int(code_entry.get().strip())
+            name = name_entry.get().strip()
+            cw1 = int(cw1_entry.get().strip())
+            cw2 = int(cw2_entry.get().strip())
+            cw3 = int(cw3_entry.get().strip())
+            exam = int(exam_entry.get().strip())
         except ValueError:
-            messagebox.showerror("Invalid input", "Numbers must be whole numbers.", parent=window)
+            messagebox.showerror("Invalid Input",
+                                 "Student number and all marks must be whole numbers.",
+                                 parent=win)
             return
 
         if not 1000 <= code <= 9999:
-            messagebox.showerror("Invalid input", "Student number must be 1000-9999.", parent=window)
+            messagebox.showerror("Invalid Input", "Student number must be 1000–9999.", parent=win)
             return
-        if name == "" or "," in name:
-            messagebox.showerror("Invalid input", "Enter a name (no commas).", parent=window)
+        if not name or "," in name:
+            messagebox.showerror("Invalid Input", "Enter a valid name (no commas).", parent=win)
             return
         if any(not 0 <= m <= 20 for m in marks):
-            messagebox.showerror("Invalid input", "Coursework marks must be 0-20.", parent=window)
+            messagebox.showerror("Invalid Input", "Coursework marks must be 0–20.", parent=win)
             return
         if not 0 <= exam <= EXAM_MAX:
-            messagebox.showerror("Invalid input", "Exam mark must be 0-100.", parent=window)
+            messagebox.showerror("Invalid Input", "Exam mark must be 0–100.", parent=win)
             return
-        # student numbers must be unique (ignore the student being edited)
+
         for other in students:
             if other["code"] == code and other is not existing:
-                messagebox.showerror("Invalid input", "That student number is already used.", parent=window)
+                messagebox.showerror("Duplicate Code", "That student number already exists.", parent=win)
                 return
 
         if existing:
             existing.update({"code": code, "name": name, "marks": marks, "exam": exam})
-            message = "Student record updated."
-            shown = existing
+            status_msg = "Student record updated."
+            target = existing
         else:
-            shown = {"code": code, "name": name, "marks": marks, "exam": exam}
-            students.append(shown)
-            message = "Student record added."
+            target = {"code": code, "name": name, "marks": marks, "exam": exam}
+            students.append(target)
+            status_msg = "New student record added."
 
-        saveStudents()                   # keep the text file in step
-        window.destroy()
-        showText(message + "\n\n" + formatStudent(shown))
+        save_students()
+        win.destroy()
+        show_output(f"{status_msg}\n\n{format_student(target)}")
 
-    Button(window, text="Save", width=12, command=saveForm).grid(row=6, column=0, columnspan=2, pady=18)
-
-
-def addStudent():
-    openStudentForm()
+    Button(win, text="Save Record", width=16, font=(FONT_NAME, 10, "bold"),
+           bg=ACCENT_COLOR, fg="white", relief=FLAT, pady=6,
+           command=save_form).grid(row=6, column=0, columnspan=2, pady=18)
 
 
-def updateStudent():
-    student = getSingleStudent()
+def add_student():
+    open_student_form()
+
+
+def update_student():
+    student = get_single_student()
     if student:
-        openStudentForm(student)
+        open_student_form(student)
 
 
-# ---------------------------------------------------------------------------
-# Extension: delete
-# ---------------------------------------------------------------------------
-def deleteStudent():
-    student = getSingleStudent()
-    if student is None:
+# ---------- EXTENSION 7: DELETE ----------
+def delete_student():
+    student = get_single_student()
+    if not student:
         return
-    if messagebox.askyesno("Confirm delete",
+    if messagebox.askyesno("Confirm Delete",
                            f"Delete {student['name']} ({student['code']})?"):
         students.remove(student)
-        saveStudents()
-        showText(f"Deleted {student['name']}.\n\nStudents remaining: {len(students)}")
+        save_students()
+        show_output(f"Deleted {student['name']} ({student['code']}).\n\n"
+                    f"Students remaining: {len(students)}")
 
+# Left menu card (floats over the background image)
+menu_frame = Frame(root, bg=PANEL_COLOR, padx=16, pady=14, bd=2, relief=RIDGE)
+menu_frame.pack(side=LEFT, fill=Y, padx=(16, 8), pady=16)
 
-# ---------------------------------------------------------------------------
-# Main window
-# ---------------------------------------------------------------------------
-root = Tk()
-root.title("Student Manager")
-root.geometry("900x560")
+Label(menu_frame, text="STUDENT MANAGER", font=(FONT_NAME, 15, "bold"),
+      bg=PANEL_COLOR, fg=ACCENT_COLOR).pack(pady=(0, 10))
 
-loadStudents()
+Label(menu_frame, text="Search (name or number):", font=(FONT_NAME, 10, "bold"),
+      bg=PANEL_COLOR, fg=TEXT_COLOR).pack(anchor=W)
 
-# Left: search box and menu buttons
-menuFrame = Frame(root, padx=12, pady=12)
-menuFrame.pack(side=LEFT, fill=Y)
+search_entry = Entry(menu_frame, font=(FONT_NAME, 11), width=25,
+                     bg=OUTPUT_BG, fg=TEXT_COLOR, relief=SOLID, bd=1)
+search_entry.pack(pady=(4, 12))
+search_entry.bind("<Return>", lambda event: view_individual())
 
-Label(menuFrame, text="STUDENT MANAGER", font=("Arial", 14, "bold")).pack(pady=(0, 10))
-Label(menuFrame, text="Search (name or number):").pack(anchor=W)
-searchEntry = Entry(menuFrame, width=26)
-searchEntry.pack(pady=(0, 12))
-
-menuItems = [
-    ("1. View all student records", viewAll),
-    ("2. View individual record", viewIndividual),
-    ("3. Highest overall mark", showHighest),
-    ("4. Lowest overall mark", showLowest),
-    ("5. Sort student records", sortStudents),
-    ("6. Add a student", addStudent),
-    ("7. Delete a student", deleteStudent),
-    ("8. Update a student", updateStudent),
-    ("Quit", root.destroy),
+menu_buttons = [
+    ("1. View All Students", view_all, ACCENT_COLOR, "white"),
+    ("2. View Individual", view_individual, ACCENT_COLOR, "white"),
+    ("3. Highest Overall Mark", show_highest, LILAC_BTN, TEXT_COLOR),
+    ("4. Lowest Overall Mark", show_lowest, LILAC_BTN, TEXT_COLOR),
+    ("5. Sort Records", sort_students, EXT_COLOR, "white"),
+    ("6. Add Student", add_student, EXT_COLOR, "white"),
+    ("7. Delete Student", delete_student, EXT_COLOR, "white"),
+    ("8. Update Student", update_student, EXT_COLOR, "white"),
+    ("Quit", root.destroy, DANGER_COLOR, "white"),
 ]
-for text, action in menuItems:
-    Button(menuFrame, text=text, width=26, command=action).pack(pady=3)
 
-# Right: read-only output area with a scroll bar
-outputFrame = Frame(root, padx=8, pady=12)
-outputFrame.pack(side=RIGHT, fill=BOTH, expand=True)
+for label, cmd, bg_c, fg_c in menu_buttons:
+    Button(menu_frame, text=label, width=24, font=(FONT_NAME, 10, "bold"),
+           bg=bg_c, fg=fg_c, relief=FLAT, pady=5, command=cmd).pack(pady=3)
 
-scrollBar = Scrollbar(outputFrame)
-scrollBar.pack(side=RIGHT, fill=Y)
-outputBox = Text(outputFrame, font=("Courier", 11), yscrollcommand=scrollBar.set,
-                 state=DISABLED, wrap=WORD)
-outputBox.pack(side=LEFT, fill=BOTH, expand=True)
-scrollBar.config(command=outputBox.yview)
+# Right scrollable output card (floats over the background image)
+output_frame = Frame(root, bg=PANEL_COLOR, padx=6, pady=6, bd=2, relief=RIDGE)
+output_frame.pack(side=RIGHT, fill=BOTH, expand=True, padx=(8, 16), pady=16)
 
-showText("Welcome! Choose an option from the menu.\n"
-         "Use the search box for options 2, 7 and 8.")
+scrollbar = Scrollbar(output_frame)
+scrollbar.pack(side=RIGHT, fill=Y)
+
+output_box = Text(output_frame, font=("Consolas", 11), bg=OUTPUT_BG, fg=TEXT_COLOR,
+                  padx=14, pady=12, bd=0, wrap=WORD,
+                  state=DISABLED, yscrollcommand=scrollbar.set)
+output_box.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.config(command=output_box.yview)
+
+show_output("Welcome to Student Manager!\nSelect an option from the left menu.\n"
+            "Tip: Use the search box for options 2, 7, and 8.")
 
 root.mainloop()

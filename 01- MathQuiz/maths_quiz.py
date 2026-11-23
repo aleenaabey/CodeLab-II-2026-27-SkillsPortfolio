@@ -28,7 +28,7 @@ FONT_NAME = "Trebuchet MS"
 TITLE_SIZE = 22
 PROBLEM_SIZE = 26
 BODY_SIZE = 12
-# ============================================================
+# ============================================================#
 
 TOTAL_QUESTIONS = 10
 
@@ -65,12 +65,10 @@ def set_background(window, img_name, width, height):
             return lbl
     return None
 
-
-# Must come AFTER set_background is defined and root is created
 BG_IMAGE = "math_bg.jpg"
 BG_COLOR = "#0b132b"
 CARD_COLOR = "#1c2541"
-bg_label = set_background(root, BG_IMAGE, 480, 380)
+bg_label = set_background(root, BG_IMAGE, 480, 380)              # background image label (used to clear the window later)
 
 
 # ---------------------------------------------------------------------------
@@ -108,28 +106,57 @@ def displayMenu():
     """Display the difficulty selection menu."""
     clear_window()
 
-    card = Frame(root, bg=CARD_COLOR, padx=30, pady=25, bd=2, relief=RIDGE)
-    card.place(relx=0.5, rely=0.5, anchor=CENTER)
+    card = Frame(root, 
+                 bg=CARD_COLOR, 
+                 padx=30, 
+                 pady=25, 
+                 bd=2, 
+                 relief=RIDGE)
+    card.place(relx=0.5, 
+               rely=0.5, 
+               anchor=CENTER)
 
-    Label(card, text="MATHS QUIZ", font=(FONT_NAME, TITLE_SIZE, "bold"),
-          bg=CARD_COLOR, fg=TEXT_COLOR).pack(pady=(0, 4))
+    Label(card, 
+          text="MATHS QUIZ", 
+          font=(FONT_NAME, TITLE_SIZE, "bold"),
+          bg=CARD_COLOR, 
+          fg=TEXT_COLOR).pack(pady=(0, 4))
 
-    Label(card, text="DIFFICULTY LEVEL", font=(FONT_NAME, BODY_SIZE, "bold"),
-          bg=CARD_COLOR, fg=ACCENT_COLOR).pack(pady=(0, 18))
+    Label(card, 
+          text="DIFFICULTY LEVEL", 
+          font=(FONT_NAME, BODY_SIZE, "bold"),
+          bg=CARD_COLOR, 
+          fg=ACCENT_COLOR).pack(pady=(0, 18))
 
-    Button(card, text="1. Easy (Single Digit)", width=24,
-           font=(FONT_NAME, BODY_SIZE, "bold"), bg=BTN_EASY, fg="#081c15",
-           relief=FLAT, pady=6,
+    Button(card, 
+           text="1. Easy (Single Digit)", 
+           width=24,
+           font=(FONT_NAME, BODY_SIZE, "bold"), 
+           bg=BTN_EASY, 
+           fg="#081c15",
+           relief=FLAT, 
+           pady=6,
            command=lambda: start_quiz("Easy")).pack(pady=5)
 
-    Button(card, text="2. Moderate (Double Digit)", width=24,
-           font=(FONT_NAME, BODY_SIZE, "bold"), bg=BTN_MOD, fg="#081c15",
-           relief=FLAT, pady=6,
+    Button(card, 
+           text="2. Moderate (Double Digit)", 
+           
+           width=24,
+           font=(FONT_NAME, BODY_SIZE, "bold"), 
+           bg=BTN_MOD, 
+           fg="#081c15",
+           relief=FLAT, 
+           pady=6,
            command=lambda: start_quiz("Moderate")).pack(pady=5)
 
-    Button(card, text="3. Advanced (4-Digit)", width=24,
-           font=(FONT_NAME, BODY_SIZE, "bold"), bg=BTN_ADV, fg="white",
-           relief=FLAT, pady=6,
+    Button(card, 
+           text="3. Advanced (4-Digit)", 
+           width=24,
+           font=(FONT_NAME, BODY_SIZE, "bold"), 
+           bg=BTN_ADV, 
+           fg="white",
+           relief=FLAT, 
+           pady=6,
            command=lambda: start_quiz("Advanced")).pack(pady=5)
 
 
@@ -150,41 +177,71 @@ def build_quiz_screen():
     global answer_entry, feedback_label, submit_btn
     clear_window()
 
-    card = Frame(root, bg=CARD_COLOR, padx=25, pady=20, bd=2, relief=RIDGE,
-                 width=380, height=300)
-    card.place(relx=0.5, rely=0.5, anchor=CENTER)
+    card = Frame(root, bg=CARD_COLOR, 
+                 padx=25, 
+                 pady=20, 
+                 bd=2, 
+                 relief=RIDGE,
+                 width=380, 
+                 height=300)
+    card.place(relx=0.5, 
+               rely=0.5, 
+               anchor=CENTER)
     card.pack_propagate(False)
 
     # Top bar: question number on the left, score on the right
-    top_bar = Frame(card, bg=CARD_COLOR)
-    top_bar.pack(fill=X, pady=(0, 15))
+    top_bar = Frame(card, 
+                    bg=CARD_COLOR)
+    top_bar.pack(fill=X, 
+                 pady=(0, 15))
 
-    progress_label = Label(top_bar, text="", font=(FONT_NAME, 11, "bold"),
-                           bg=CARD_COLOR, fg=TEXT_COLOR)
+    progress_label = Label(top_bar, 
+                           text="", 
+                           font=(FONT_NAME, 11, "bold"),
+                           bg=CARD_COLOR, 
+                           fg=TEXT_COLOR)
     progress_label.pack(side=LEFT)
 
-    score_label = Label(top_bar, text="Score: 0", font=(FONT_NAME, 11, "bold"),
-                        bg=CARD_COLOR, fg=ACCENT_COLOR)
+    score_label = Label(top_bar, 
+                        text="Score: 0", 
+                        font=(FONT_NAME, 11, "bold"),
+                        bg=CARD_COLOR, 
+                        fg=ACCENT_COLOR)
     score_label.pack(side=RIGHT)
 
     # The question
-    problem_label = Label(card, text="", font=(FONT_NAME, PROBLEM_SIZE, "bold"),
-                          bg=CARD_COLOR, fg="#ffffff")
+    problem_label = Label(card, 
+                          text="", 
+                          font=(FONT_NAME, PROBLEM_SIZE, "bold"),
+                          bg=CARD_COLOR, 
+                          fg="#ffffff")
     problem_label.pack(pady=(18, 12))
 
     # Answer box (pressing Enter also submits)
-    answer_entry = Entry(card, font=(FONT_NAME, 16), width=12, justify="center")
+    answer_entry = Entry(card, 
+                         font=(FONT_NAME, 16), 
+                         width=12, 
+                         justify="center")
     answer_entry.pack(pady=6)
-    answer_entry.bind("<Return>", lambda event: check_answer())
+    answer_entry.bind("<Return>", 
+                      lambda event: check_answer())
 
-    submit_btn = Button(card, text="Submit Answer",
-                        font=(FONT_NAME, BODY_SIZE, "bold"), bg=ACCENT_COLOR,
-                        fg="#1b4332", width=16, pady=5, relief=FLAT,
+    submit_btn = Button(card, 
+                        text="Submit Answer",
+                        font=(FONT_NAME, BODY_SIZE, "bold"), 
+                        bg=ACCENT_COLOR,
+                        fg="#1b4332",
+                          width=16, 
+                          pady=5, 
+                          relief=FLAT,
                         command=check_answer)
     submit_btn.pack(pady=14)
 
-    feedback_label = Label(card, text="", font=(FONT_NAME, 11, "bold"),
-                           bg=CARD_COLOR, fg=ACCENT_COLOR)
+    feedback_label = Label(card, 
+                           text="", 
+                           font=(FONT_NAME, 11, "bold"),
+                           bg=CARD_COLOR, 
+                           fg=ACCENT_COLOR)
     feedback_label.pack(pady=4)
 
 
@@ -209,11 +266,11 @@ def displayProblem():
 def check_answer():
     """Called when the user submits an answer: validate, mark and score it."""
     global score, attempt
-    raw = answer_entry.get().strip()
+    raw = answer_entry.get().strip()                   # get the user's input and remove whitespace
 
-    # Input validation: must be a whole number
+    # Input validation
     try:
-        user_ans = int(raw)
+        user_ans = int(raw)             # convert the input to an integer (will raise ValueError if not a valid whole number)
     except ValueError:
         messagebox.showwarning("Invalid Input", "Please enter a valid whole number.")
         answer_entry.focus()
@@ -278,30 +335,57 @@ def displayResults(final_score):
     clear_window()
     rank = get_rank(final_score)
 
-    card = Frame(root, bg=CARD_COLOR, padx=30, pady=25, bd=2, relief=RIDGE)
-    card.place(relx=0.5, rely=0.5, anchor=CENTER)
+    card = Frame(root, 
+                 bg=CARD_COLOR, 
+                 padx=30, 
+                 pady=25, 
+                 bd=2, 
+                 relief=RIDGE)
+    card.place(relx=0.5, 
+               rely=0.5, 
+               anchor=CENTER)
 
-    Label(card, text="QUIZ COMPLETE!", font=(FONT_NAME, TITLE_SIZE - 2, "bold"),
-          bg=CARD_COLOR, fg=ACCENT_COLOR).pack(pady=(0, 10))
+    Label(card, 
+          text="QUIZ COMPLETE!", 
+          font=(FONT_NAME, TITLE_SIZE - 2, "bold"),
+          bg=CARD_COLOR, 
+          fg=ACCENT_COLOR).pack(pady=(0, 10))
 
-    Label(card, text=f"Final Score: {final_score} / 100",
-          font=(FONT_NAME, 16, "bold"), bg=CARD_COLOR, fg=TEXT_COLOR).pack(pady=6)
+    Label(card, 
+          text=f"Final Score: {final_score} / 100",
+          font=(FONT_NAME, 16, "bold"), 
+          bg=CARD_COLOR, 
+          fg=TEXT_COLOR).pack(pady=6)
 
-    Label(card, text=f"Rank: {rank}", font=(FONT_NAME, 18, "bold"),
-          bg=CARD_COLOR, fg="#95d5b2").pack(pady=6)
+    Label(card, 
+          text=f"Rank: {rank}", 
+          font=(FONT_NAME, 18, "bold"),
+          bg=CARD_COLOR, 
+          fg="#95d5b2").pack(pady=6)
 
-    Label(card, text="Would you like to play again?", font=(FONT_NAME, BODY_SIZE),
-          bg=CARD_COLOR, fg=TEXT_COLOR).pack(pady=(12, 10))
+    Label(card, text="Would you like to play again?", 
+          font=(FONT_NAME, BODY_SIZE),
+          bg=CARD_COLOR, 
+          fg=TEXT_COLOR).pack(pady=(12, 10))
 
     btn_frame = Frame(card, bg=CARD_COLOR)
     btn_frame.pack()
 
-    Button(btn_frame, text="Play Again", width=12,
-           font=(FONT_NAME, BODY_SIZE, "bold"), bg=BTN_EASY, fg="#081c15",
-           relief=FLAT, pady=5, command=displayMenu).pack(side=LEFT, padx=6)
+    Button(btn_frame, 
+           text="Play Again",
+             width=12,
+           font=(FONT_NAME, BODY_SIZE, "bold"), 
+           bg=BTN_EASY, 
+           fg="#081c15",
+           relief=FLAT, 
+           pady=5, 
+           command=displayMenu).pack(side=LEFT, padx=6)
 
-    Button(btn_frame, text="Quit", width=12,
-           font=(FONT_NAME, BODY_SIZE, "bold"), bg=BTN_ADV, fg="white",
+    Button(btn_frame, 
+           text="Quit", 
+           width=12,
+           font=(FONT_NAME,BODY_SIZE, "bold"), 
+                 bg=BTN_ADV, fg="white",
            relief=FLAT, pady=5, command=root.destroy).pack(side=LEFT, padx=6)
 
 

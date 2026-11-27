@@ -1,0 +1,127 @@
+{
+    "last_updated": "27 November 2026",
+    "total_students": 10,
+    "average_percentage": 68.3,
+    "Student Details": [
+        {
+            "code": 1345,
+            "name": "John Curry",
+            "cw1": 8,
+            "cw2": 15,
+            "cw3": 7,
+            "coursework_total": 30,
+            "exam": 45,
+            "overall_mark": 75,
+            "percentage": 46.9,
+            "grade": "D"
+        },
+        {
+            "code": 2345,
+            "name": "Sam Sturtivant",
+            "cw1": 14,
+            "cw2": 15,
+            "cw3": 14,
+            "coursework_total": 43,
+            "exam": 77,
+            "overall_mark": 120,
+            "percentage": 75.0,
+            "grade": "A"
+        },
+        {
+            "code": 9876,
+            "name": "Lee Scott",
+            "cw1": 17,
+            "cw2": 11,
+            "cw3": 16,
+            "coursework_total": 44,
+            "exam": 99,
+            "overall_mark": 143,
+            "percentage": 89.4,
+            "grade": "A"
+        },
+        {
+            "code": 3724,
+            "name": "Matt Thompson",
+            "cw1": 19,
+            "cw2": 11,
+            "cw3": 15,
+            "coursework_total": 45,
+            "exam": 81,
+            "overall_mark": 126,
+            "percentage": 78.8,
+            "grade": "A"
+        },
+        {
+            "code": 1212,
+            "name": "Ron Herrema",
+            "cw1": 14,
+            "cw2": 17,
+            "cw3": 18,
+            "coursework_total": 49,
+            "exam": 66,
+            "overall_mark": 115,
+            "percentage": 71.9,
+            "grade": "A"
+        },
+        {
+            "code": 8439,
+            "name": "Jake Hobbs",
+            "cw1": 10,
+            "cw2": 11,
+            "cw3": 10,
+            "coursework_total": 31,
+            "exam": 43,
+            "overall_mark": 74,
+            "percentage": 46.2,
+            "grade": "D"
+        },
+        {
+            "code": 2344,
+            "name": "Jo Hyde",
+            "cw1": 6,
+            "cw2": 15,
+            "cw3": 10,
+            "coursework_total": 31,
+            "exam": 55,
+            "overall_mark": 86,
+            "percentage": 53.8,
+            "grade": "C"
+        },
+        {
+            "code": 9384,
+            "name": "Gareth Southgate",
+            "cw1": 5,
+            "cw2": 6,
+            "cw3": 8,
+            "coursework_total": 19,
+            "exam": 33,
+            "overall_mark": 52,
+            "percentage": 32.5,
+            "grade": "F"
+        },
+        {
+            "code": 8327,
+            "name": "Alan Shearer",
+            "cw1": 20,
+            "cw2": 20,
+            "cw3": 20,
+            "coursework_total": 60,
+            "exam": 100,
+            "overall_mark": 160,
+            "percentage": 100.0,
+            "grade": "A"
+        },
+        {
+            "code": 2983,
+            "name": "Les Ferdinand",
+            "cw1": 15,
+            "cw2": 17,
+            "cw3": 18,
+            "coursework_total": 50,
+            "exam": 92,
+            "overall_mark": 142,
+            "percentage": 88.8,
+            "grade": "A"
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+STUDENT MANAGER - CLASS REPORT
+Generated: 27 November 2026
+============================================================
+
+Student Name       : John Curry
+Student Number     : 1345
+Coursework Total   : 30 / 60  (CW1: 8, CW2: 15, CW3: 7)
+Exam Mark          : 45 / 100
+Overall Percentage : 46.9%
+Student Grade      : D
+------------------------------------------------------------
+Student Name       : Sam Sturtivant
+Student Number     : 2345
+Coursework Total   : 43 / 60  (CW1: 14, CW2: 15, CW3: 14)
+Exam Mark          : 77 / 100
+Overall Percentage : 75.0%
+Student Grade      : A
+------------------------------------------------------------
+Student Name       : Lee Scott
+Student Number     : 9876
+Coursework Total   : 44 / 60  (CW1: 17, CW2: 11, CW3: 16)
+Exam Mark          : 99 / 100
+Overall Percentage : 89.4%
+Student Grade      : A
+------------------------------------------------------------
+Student Name       : Matt Thompson
+Student Number     : 3724
+Coursework Total   : 45 / 60  (CW1: 19, CW2: 11, CW3: 15)
+Exam Mark          : 81 / 100
+Overall Percentage : 78.8%
+Student Grade      : A
+------------------------------------------------------------
+Student Name       : Ron Herrema
+Student Number     : 1212
+Coursework Total   : 49 / 60  (CW1: 14, CW2: 17, CW3: 18)
+Exam Mark          : 66 / 100
+Overall Percentage : 71.9%
+Student Grade      : A
+------------------------------------------------------------
+Student Name       : Jake Hobbs
+Student Number     : 8439
+Coursework Total   : 31 / 60  (CW1: 10, CW2: 11, CW3: 10)
+Exam Mark          : 43 / 100
+Overall Percentage : 46.2%
+Student Grade      : D
+------------------------------------------------------------
+Student Name       : Jo Hyde
+Student Number     : 2344
+Coursework Total   : 31 / 60  (CW1: 6, CW2: 15, CW3: 10)
+Exam Mark          : 55 / 100
+Overall Percentage : 53.8%
+Student Grade      : C
+------------------------------------------------------------
+Student Name       : Gareth Southgate
+Student Number     : 9384
+Coursework Total   : 19 / 60  (CW1: 5, CW2: 6, CW3: 8)
+Exam Mark          : 33 / 100
+Overall Percentage : 32.5%
+Student Grade      : F
+------------------------------------------------------------
+Student Name       : Alan Shearer
+Student Number     : 8327
+Coursework Total   : 60 / 60  (CW1: 20, CW2: 20, CW3: 20)
+Exam Mark          : 100 / 100
+Overall Percentage : 100.0%
+Student Grade      : A
+------------------------------------------------------------
+Student Name       : Les Ferdinand
+Student Number     : 2983
+Coursework Total   : 50 / 60  (CW1: 15, CW2: 17, CW3: 18)
+Exam Mark          : 92 / 100
+Overall Percentage : 88.8%
+Student Grade      : A
+------------------------------------------------------------
+
+CLASS SUMMARY
+============================================================
+Number of Students in Class : 10
+Average Percentage Mark     : 68.3%
